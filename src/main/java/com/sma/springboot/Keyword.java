@@ -1,6 +1,5 @@
 package com.sma.springboot;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class Keyword {
