@@ -40,9 +40,7 @@ public class KeywordController {
 		List<String> sentences = sentSplit.jSentences(paragraph);
 		
 		//각 문장 내의 명사, 동사 추출 및 저장
-		List<String> nouns = return_nouns(sentences);
-		List<String> verbs = return_verbs(sentences);
-		List<String> nouns_verbs = new ArrayList<String>(nouns); nouns_verbs.addAll(verbs);
+		List<String> nouns_verbs = return_nouns_verbs(sentences);
 		nouns_verbs = remove_stopwords(nouns_verbs);
 
 		//상위 출현 10개 추출 및 정렬
@@ -52,9 +50,10 @@ public class KeywordController {
 		return keywords;
 	}
 	
-	public List<String> return_nouns(List<String> sentences) {
+	public List<String> return_nouns_verbs(List<String> sentences) {
 		//초기화
 		List<String> nouns = new ArrayList<String>();
+		List<String> verbs = new ArrayList<String>();
 		Tagger tagger = new Tagger();
 		
 		//각 문장별 명사 추출
@@ -66,30 +65,19 @@ public class KeywordController {
 				nouns.add(analyzed.jNouns().get(j).toString().split("/")[0].split(" ")[1]);
 				
 			}
-		}
-		
-		return nouns;
-	}
-	
-	public List<String> return_verbs(List<String> sentences) {
-		//초기화
-		List<String> verbs = new ArrayList<String>();
-		Tagger tagger = new Tagger();
-		
-		//각 문장별 동사 추출
-		for (int i=0; i < sentences.size(); i++  ) {
-			Sentence analyzed = tagger.tagSentence(sentences.get(i));
-					
+			
 			for (int j=0; j < analyzed.jVerbs().size(); j++ ) {
 				
 				verbs.add(analyzed.jVerbs().get(j).toString().split("/")[0].split(" ")[1]);
 				
 			}
 		}
+		List<String> nouns_verbs = new ArrayList<String>(nouns); nouns_verbs.addAll(verbs);
+		nouns_verbs = remove_stopwords(nouns_verbs);
 		
-		return verbs;
-				
-	}
+		return nouns_verbs;
+	}	
+
 	
 	//단어 추출 횟수를 단어: 숫자로 맵핑
 	public HashMap<String, Integer> count(List<String> words) {
