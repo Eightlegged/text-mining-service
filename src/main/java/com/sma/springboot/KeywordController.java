@@ -18,11 +18,7 @@ import kr.bydelta.koala.data.Sentence;
 import kr.bydelta.koala.data.Word;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 public class KeywordController {
@@ -34,9 +30,6 @@ public class KeywordController {
 	@ResponseBody
 	public Keyword keyword(@RequestBody DataObject input) {
 		
-		//초기화
-		
-//		Tagger tagger = new Tagger();
 		SentenceSplitter sentSplit = new SentenceSplitter();
 
 		
@@ -47,9 +40,8 @@ public class KeywordController {
 		List<String> nouns = return_nouns(sentences);
 		List<String> verbs = return_verbs(sentences);
 
-		keywords.setKeywords(nouns);
+		keywords.setKeywords(sortByValue(count(nouns)).subList(0, 9));
 		keywords.setDivision(input.getDivision());
-		
 		
 		return keywords;
 	}
@@ -88,4 +80,38 @@ public class KeywordController {
 		return verbs;
 				
 	}
+	
+	public HashMap<String, Integer> count(List<String> words) {
+		HashMap<String , Integer> result = new HashMap<String , Integer>();
+		for (int i=0; i < words.size(); i++) {
+			
+			if (!result.containsKey(words.get(i))) {
+				result.put(words.get(i), 1);
+			}
+			else {
+				result.put(words.get(i), result.get(words.get(i)) + 1);
+			}
+		}
+		
+		return result;
+	}
+	
+	public static List<String> sortByValue(final Map map) {
+        List<String> list = new ArrayList();
+        list.addAll(map.keySet());
+         
+        Collections.sort(list,new Comparator() {
+             
+            public int compare(Object o1,Object o2) {
+                Object v1 = map.get(o1);
+                Object v2 = map.get(o2);
+                 
+                return ((Comparable) v2).compareTo(v1);
+            }
+             
+        });
+//        Collections.reverse(list); // 주석시 오름차순
+        return list;
+    }
+
 }
