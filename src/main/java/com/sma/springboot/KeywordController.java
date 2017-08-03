@@ -1,23 +1,21 @@
 package com.sma.springboot;
 
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import kr.bydelta.koala.twt.SentenceSplitter;
 import kr.bydelta.koala.eunjeon.Tagger;
-import kr.bydelta.koala.kkma.Parser;
 import kr.bydelta.koala.data.Sentence;
-import kr.bydelta.koala.data.Word;
 
-import java.io.IOException;
+import kr.bydelta.koala.eunjeon.JavaDictionary;
+import kr.bydelta.koala.POS;
+import kr.bydelta.koala.POS$;
+import java.util.LinkedList;
+
 import java.util.*;
 
 @RestController
@@ -30,6 +28,8 @@ public class KeywordController {
 	@ResponseBody
 	public Keyword keyword(@RequestBody DataObject input) {
 		
+		//초기셋팅
+		add_user_words();
 		SentenceSplitter sentSplit = new SentenceSplitter();
 		Keyword keywords = new Keyword(Arrays.asList("1", "2"), "initial division");
 		
@@ -121,5 +121,19 @@ public class KeywordController {
 				
 		words.removeAll(stopwords);
 		return words;
+	}
+	
+	public void add_user_words() {
+		LinkedList<String> morphemes = new LinkedList<>();
+		LinkedList<POS$.Value> pos = new LinkedList<>();
+
+		morphemes.add("트랜스포메이션");
+		pos.add(POS.NNP()); /* 고유명사 '설빙' 추가 */
+//
+//		morphemes.add("구글하");
+//		pos.add(POS.VV()); /* 동사 '구글하다' 추가 */
+
+		// 이 동작을 하지 않으면 추가되지 않습니다.
+		JavaDictionary.addUserDictionary(morphemes, pos);
 	}
 }
