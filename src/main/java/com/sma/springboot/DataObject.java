@@ -1,18 +1,17 @@
 package com.sma.springboot;
 
-import java.util.List;
 
 public class DataObject {
-	private List<String> speech;
+	private String speech;
 	private String division;
 	
 	
 	
-	public List<String> getSpeech(){
+	public String getSpeech(){
 		return speech;
 	}
 	
-	public void setSpeech(List<String> speech) {
+	public void setSpeech(String speech) {
 		this.speech = speech;
 	}
 	
