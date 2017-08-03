@@ -24,14 +24,14 @@ import java.util.*;
 public class KeywordController {
 		
 //	public List<String> nouns = new ArrayList<String>();
-	public Keyword keywords = new Keyword(Arrays.asList("1", "2"), "initial division");
+//	public Keyword keywords = new Keyword(Arrays.asList("1", "2"), "initial division");
 	
 	@RequestMapping("/keyword")
 	@ResponseBody
 	public Keyword keyword(@RequestBody DataObject input) {
 		
 		SentenceSplitter sentSplit = new SentenceSplitter();
-
+		Keyword keywords = new Keyword(Arrays.asList("1", "2"), "initial division");
 		
 		String paragraph = input.getSpeech();
 		
@@ -39,8 +39,9 @@ public class KeywordController {
 		
 		List<String> nouns = return_nouns(sentences);
 		List<String> verbs = return_verbs(sentences);
+		List<String> nouns_verbs = new ArrayList<String>(nouns); nouns_verbs.addAll(verbs);
 
-		keywords.setKeywords(sortByValue(count(nouns)).subList(0, 9));
+		keywords.setKeywords(sortByValue(count(nouns_verbs)).subList(0, 9));
 		keywords.setDivision(input.getDivision());
 		
 		return keywords;
@@ -114,4 +115,5 @@ public class KeywordController {
         return list;
     }
 
+	
 }
