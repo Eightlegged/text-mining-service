@@ -1,6 +1,5 @@
 package com.sma.springboot;
 
-import java.util.List;
 import java.util.HashMap;
 
 public class Keyword {
