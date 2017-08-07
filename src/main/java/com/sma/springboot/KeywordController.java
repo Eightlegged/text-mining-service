@@ -31,7 +31,8 @@ public class KeywordController {
 		//초기셋팅
 		add_user_words();
 		SentenceSplitter sentSplit = new SentenceSplitter();
-		Keyword keywords = new Keyword(Arrays.asList("1", "2"), "initial division");
+		HashMap<String, Integer> init = new HashMap<String, Integer>();
+//		Keyword keywords = new Keyword();
 		
 		//input json 단락 내용 가져오기
 		String paragraph = input.getSpeech();
@@ -44,8 +45,16 @@ public class KeywordController {
 		nouns_verbs = remove_stopwords(nouns_verbs);
 
 		//상위 출현 10개 추출 및 정렬
-		keywords.setKeywords(sortByValue(count(nouns_verbs)).subList(0, 9));
-		keywords.setDivision(input.getDivision());
+		List<String> words = sortByValue(count(nouns_verbs)).subList(0, 9);
+		List<Integer> freqs = getFreqs(count(nouns_verbs), words);
+		
+		for (int i = 0; i < sortByValue(count(nouns_verbs)).subList(0, 9).size(); i++) {
+			init.put(words.get(i), freqs.get(i));
+		}
+		
+		Keyword keywords = new Keyword(init, input.getDivision());
+//		keywords.setKeywords(sortByValue(count(nouns_verbs)).subList(0, 9));
+//		keywords.setDivision(input.getDivision());
 		
 		return keywords;
 	}
@@ -113,6 +122,16 @@ public class KeywordController {
 //        Collections.reverse(list); // 주석시 오름차순
         return list;
     }
+	
+	//단어에 맞는 frequency 추출
+	public List<Integer> getFreqs(HashMap<String, Integer> words, List<String> terms){
+		List<Integer> freqs = new ArrayList<Integer>();
+		for (String term : terms) {
+			freqs.add(words.get(term));
+		}
+		
+		return freqs;
+	}
 	
 	//필요 없는 단어 제거
 	public static List<String> remove_stopwords(List<String> words) {

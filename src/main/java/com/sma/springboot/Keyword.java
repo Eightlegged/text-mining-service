@@ -1,21 +1,22 @@
 package com.sma.springboot;
 
 import java.util.List;
+import java.util.HashMap;
 
 public class Keyword {
-	private List<String> keywords;
+	private HashMap<String, Integer> keywords;
 	private String division;
 	
-	public Keyword(List<String> keywords, String division) {
+	public Keyword(HashMap<String,Integer> keywords, String division) {
 		this.keywords = keywords;
 		this.division = division;
 	}
 	
-	public List<String> getKeywords(){
+	public HashMap<String, Integer> getKeywords(){
 		return keywords;
 	}
 	
-	public void setKeywords(List<String> keywords) {
+	public void setKeywords(HashMap<String, Integer> keywords) {
 		this.keywords = keywords;
 	}
 	
