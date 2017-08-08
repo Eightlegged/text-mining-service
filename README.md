@@ -22,6 +22,7 @@ Sprint-Boot를 통해 구동
 http://localhost:8080/keyword
 
 위 주소로 아래 포맷에 맞게 POST 요청을 보내면 결과값을 반환
+결과값은 <"키워드" : 빈도수> 형식으로 반환  
 
 #### Input Format(예시)
 
@@ -50,6 +51,8 @@ http://localhost:8080/keyword
 http://localhost:8080/association
 
 위 주소로 아래 포맷에 맞게 POST 요청을 보내면 결과값을 반환
+결과값은 <"연관단어" : 연관도> 형식으로 반환
+연관단어 = (토픽과 해당 단어가 함께 출현한 횟수)/(토픽이 출현한 문장의 횟수)
 #### Input Format(example)
 
 {
