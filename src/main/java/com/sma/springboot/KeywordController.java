@@ -21,8 +21,6 @@ import java.util.*;
 @RestController
 public class KeywordController {
 		
-//	public List<String> nouns = new ArrayList<String>();
-//	public Keyword keywords = new Keyword(Arrays.asList("1", "2"), "initial division");
 	
 	@RequestMapping("/keyword")
 	@ResponseBody
@@ -31,24 +29,107 @@ public class KeywordController {
 		//초기셋팅
 		add_user_words();
 		SentenceSplitter sentSplit = new SentenceSplitter();
-		Keyword keywords = new Keyword(Arrays.asList("1", "2"), "initial division");
+		HashMap<String, Integer> init = new HashMap<String, Integer>();
 		
 		//input json 단락 내용 가져오기
 		String paragraph = input.getSpeech();
 		
 		//단락을 문장으로 분리
 		List<String> sentences = sentSplit.jSentences(paragraph);
+		System.out.println(sentences);
 		
 		//각 문장 내의 명사, 동사 추출 및 저장
 		List<String> nouns_verbs = return_nouns_verbs(sentences);
 		nouns_verbs = remove_stopwords(nouns_verbs);
 
 		//상위 출현 10개 추출 및 정렬
+<<<<<<< HEAD
 		keywords.setKeywords(sortByValue(count(nouns_verbs)).subList(0, 9));
 		System.out.println(extract_freq(count(nouns_verbs), sortByValue(count(nouns_verbs)).subList(0, 9)));
 		keywords.setDivision(input.getDivision());
+=======
+		List<String> words = sortByValue(count(nouns_verbs)).subList(0, 9);
+		List<Integer> freqs = getFreqs(count(nouns_verbs), words);
+		
+		for (int i = 0; i < sortByValue(count(nouns_verbs)).subList(0, 9).size(); i++) {
+			init.put(words.get(i), freqs.get(i));
+		}
+		
+		Keyword keywords = new Keyword(init, input.getDivision());
+>>>>>>> 018fc25fcbbc959297fc4c2ec0d30b157ba861c6
 		
 		return keywords;
+	}
+	
+	@RequestMapping("/association")
+	public Association association(@RequestBody DataTopic input) {
+		
+		//초기셋팅
+		add_user_words();
+		SentenceSplitter sentSplit = new SentenceSplitter();
+		HashMap<String, Double> init = new HashMap<String, Double>();
+		List<Double> correlations = new ArrayList<Double>();
+		
+		//input json 단락 내용 가져오기
+		String paragraph = input.getSpeech();
+				
+		//단락을 문장으로 분리
+		List<String> sentences = sentSplit.jSentences(paragraph);
+		
+		//각 문장 내의 명사, 동사 추출 및 저장
+		ArrayList<List<String>> sentences_array = get_sentences(sentences);
+		List<String> nouns_verbs = return_nouns_verbs(sentences);
+		nouns_verbs = remove_stopwords(nouns_verbs);
+		Set<String> words_unique = new HashSet<String>();
+		
+		//making unique set
+		for (String word : nouns_verbs) {
+			words_unique.add(word);
+		}
+		
+		words_unique.remove(input.getTopic());
+		
+		//correlation 추출
+		for (String word : words_unique) {
+			Double correlation = 0.0;
+			Double sum = 0.0;
+			Integer size = 0;
+			
+			for(List<String> sentence : sentences_array) {
+				
+				if (sentence.contains(input.getTopic())) {
+					size = size + 1;
+					
+					if(sentence.contains(word)) {
+						sum = sum + 1;
+					}
+				}
+				
+			}
+			
+			correlation = sum/size;
+			if(word == input.getTopic()) {
+				correlation = 0.0;
+			}
+			init.put(word, correlation);
+			
+		}
+		
+		//상위 출현 10개 추출 및 정렬
+		List<String> words = sortByValue(init).subList(0, 9);
+		
+		HashMap<String, Double> assos = new HashMap<String, Double>();
+		
+		correlations = getCorrelations(init, words);
+				
+		for (int i = 0; i < words.size(); i++) {
+			assos.put(words.get(i), correlations.get(i));
+		}
+				
+		Association association = new Association(assos, input.getTopic());
+		
+		return association;
+		
 	}
 	
 	public List<String> return_nouns_verbs(List<String> sentences) {
@@ -78,6 +159,38 @@ public class KeywordController {
 		
 		return nouns_verbs;
 	}	
+	
+	//Sentences Array 생성
+	public ArrayList<List<String>> get_sentences(List<String> sentences) {
+		//초기화
+		ArrayList<List<String>> result = new ArrayList<List<String>>();
+		
+		Tagger tagger = new Tagger();
+		
+		//각 문장별 명사 추출
+		for (int i=0; i < sentences.size(); i++  ) {
+			Sentence sentence = tagger.tagSentence(sentences.get(i));
+			
+			List<String> new_sentence = new ArrayList<String>();
+			
+			for (int j=0; j < sentence.jNouns().size(); j++ ) {
+				
+				new_sentence.add(sentence.jNouns().get(j).toString().split("/")[0].split(" ")[1]);
+				
+			}
+			
+			for (int j=0; j < sentence.jVerbs().size(); j++ ) {
+				
+				new_sentence.add(sentence.jVerbs().get(j).toString().split("/")[0].split(" ")[1]);
+				
+			}
+			new_sentence = remove_stopwords(new_sentence);
+			result.add(new_sentence);
+			
+		}
+		
+		return result;
+	}
 
 	
 	//단어 추출 횟수를 단어: 숫자로 맵핑
@@ -115,6 +228,7 @@ public class KeywordController {
         return list;
     }
 	
+<<<<<<< HEAD
 	//각 단어에 맞는 frequency 추출
 	public List<Integer> extract_freq(HashMap<String, Integer> map, List<String> words){
 		List<Integer> result = new ArrayList();
@@ -123,6 +237,26 @@ public class KeywordController {
 		}
 		
 		return result;
+=======
+	//단어에 맞는 frequency 추출
+	public List<Integer> getFreqs(HashMap<String, Integer> words, List<String> terms){
+		List<Integer> freqs = new ArrayList<Integer>();
+		for (String term : terms) {
+			freqs.add(words.get(term));
+		}
+		
+		return freqs;
+	}
+	
+	//연관단어에 맞는 correlation 추출
+	public List<Double> getCorrelations(HashMap<String, Double> words, List<String> terms){
+		List<Double> correlations = new ArrayList<Double>();
+		for (String term : terms) {
+			correlations.add(words.get(term));
+		}
+		
+		return correlations;
+>>>>>>> 018fc25fcbbc959297fc4c2ec0d30b157ba861c6
 	}
 	
 	//필요 없는 단어 제거
