@@ -43,11 +43,6 @@ public class KeywordController {
 		nouns_verbs = remove_stopwords(nouns_verbs);
 
 		//상위 출현 10개 추출 및 정렬
-<<<<<<< HEAD
-		keywords.setKeywords(sortByValue(count(nouns_verbs)).subList(0, 9));
-		System.out.println(extract_freq(count(nouns_verbs), sortByValue(count(nouns_verbs)).subList(0, 9)));
-		keywords.setDivision(input.getDivision());
-=======
 		List<String> words = sortByValue(count(nouns_verbs)).subList(0, 9);
 		List<Integer> freqs = getFreqs(count(nouns_verbs), words);
 		
@@ -56,7 +51,6 @@ public class KeywordController {
 		}
 		
 		Keyword keywords = new Keyword(init, input.getDivision());
->>>>>>> 018fc25fcbbc959297fc4c2ec0d30b157ba861c6
 		
 		return keywords;
 	}
@@ -228,16 +222,6 @@ public class KeywordController {
         return list;
     }
 	
-<<<<<<< HEAD
-	//각 단어에 맞는 frequency 추출
-	public List<Integer> extract_freq(HashMap<String, Integer> map, List<String> words){
-		List<Integer> result = new ArrayList();
-		for (int i=0; i < words.size(); i++) {
-			result.add(i, map.get(words.get(i))); 
-		}
-		
-		return result;
-=======
 	//단어에 맞는 frequency 추출
 	public List<Integer> getFreqs(HashMap<String, Integer> words, List<String> terms){
 		List<Integer> freqs = new ArrayList<Integer>();
@@ -256,7 +240,6 @@ public class KeywordController {
 		}
 		
 		return correlations;
->>>>>>> 018fc25fcbbc959297fc4c2ec0d30b157ba861c6
 	}
 	
 	//필요 없는 단어 제거
