@@ -22,4 +22,5 @@ public class DataObject {
 	public void setDivision(String division) {
 		this.division = division;
 	}
+
 }

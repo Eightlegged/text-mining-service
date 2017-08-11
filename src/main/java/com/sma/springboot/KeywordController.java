@@ -55,6 +55,56 @@ public class KeywordController {
 		return keywords;
 	}
 	
+	@RequestMapping("/similarity")
+	public Similarity similarity(@RequestBody Documents input) {
+		Double ratio = 0.0;
+		Double a = 0.0;
+		Double b = 0.0;
+		Double c = 0.0;
+		
+		String doc1 = input.getDoc1();
+		String doc2 = input.getDoc2();
+		String doc_total = doc1.concat(doc2);
+		
+		SentenceSplitter sentSplit = new SentenceSplitter();
+		List<String> sentences_1 = sentSplit.jSentences(doc1);
+		List<String> sentences_2 = sentSplit.jSentences(doc2);
+		List<String> sentences_total = sentSplit.jSentences(doc_total);
+		
+		List<String> terms = return_nouns_verbs(sentences_total);
+		terms = remove_stopwords(terms);
+		Set<String> terms_unique = new HashSet<String>();
+		
+		//making unique set
+		for (String word : terms) {
+			terms_unique.add(word);
+		}
+		
+		// doc1 set doc2 set
+		List<String> terms_1 = return_nouns_verbs(sentences_1);
+		terms_1 = remove_stopwords(terms_1);
+		List<String> terms_2 = return_nouns_verbs(sentences_2);
+		terms_2 = remove_stopwords(terms_2);
+				
+		
+		for (String term : terms) {
+			if (terms_1.contains(term) && terms_2.contains(term)) {
+				a = a + 1;
+			} else if (terms_1.contains(term) && !terms_2.contains(term)) {
+				b = b + 1;
+			} else if (!terms_1.contains(term) && terms_2.contains(term)) {
+				c = c + 1;
+			}
+		}
+		
+		ratio = a/(a+b+c);
+		
+		
+		Similarity similarity = new Similarity();
+		similarity.setSimilarity(ratio);
+		return similarity;
+	}
+	
 	@RequestMapping("/association")
 	public Association association(@RequestBody DataTopic input) {
 		
